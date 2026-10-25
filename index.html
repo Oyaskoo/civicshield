@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CivicShield – Smart Incident Reporting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<header class="nav">
+  <div class="container nav-inner">
+    <button class="icon-btn" id="menuBtn" aria-label="Open dashboard">
+      <svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="logo-mark">
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
+    </div>
+    <a href="#home" class="brand">CivicShield <small>SMART INCIDENT REPORTING</small></a>
+    <nav class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#report">Report Hazard</a>
+      <a href="#map-section">Live Map</a>
+      <a href="#incidents">Incidents</a>
+    </nav>
+    <div class="nav-spacer"></div>
+    <a href="#report" class="btn btn-primary">
+      <svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="t">Report Issue</span>
+    </a>
+    <button class="btn btn-outline" id="adminBtn">
+      <svg class="i" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg><span class="t" id="adminBtnText">Admin Login</span>
+    </button>
+  </div>
+</header>
+
+<main id="home">
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="pill">Community Hazard Platform</span>
+      <h1>Report Local Hazards.<br><span>Keep Our City Safe.</span></h1>
+      <p class="lead">Encountered a dangerous pothole, broken streetlight, or fallen tree? Snap a photo, add a brief description, and your GPS location attaches automatically to alert city managers immediately.</p>
+      <div class="hero-actions">
+        <a href="#report" class="btn btn-primary">
+          <svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Report a Hazard
+        </a>
+        <a href="#map-section" class="btn btn-dark">
+          <svg class="i" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>View Live Map
+        </a>
+      </div>
+      <div class="stats-strip">
+        <div class="stat"><b class="c-total" data-stat="total">0</b><span>Total Hazards</span></div>
+        <div class="stat"><b class="c-pending" data-stat="pending">0</b><span>Pending Crew</span></div>
+        <div class="stat"><b class="c-progress" data-stat="progress">0</b><span>In Repair</span></div>
+        <div class="stat"><b class="c-resolved" data-stat="resolved">0</b><span>Resolved</span></div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div><h3>Capture &amp; Upload</h3><p>Snap a picture of the hazard directly from your mobile device or computer.</p></div></div>
+      <div class="step"><div class="num">2</div><div><h3>Auto GPS Tagging</h3><p>Your location coordinates are automatically attached so city repair crews locate it instantly.</p></div></div>
+      <div class="step"><div class="num">3</div><div><h3>Real-Time Tracking</h3><p>Follow status changes live from <strong>Pending → In Progress → Resolved</strong>.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FORM ============ -->
+<section class="block" id="report">
+  <div class="container">
+    <div class="eyebrow">Citizen Portal</div>
+    <h2>Submit a Hazard Report</h2>
+    <p class="sub">Fill out the details below. Location coordinates can be auto-detected via GPS or selected on the map.</p>
+
+    <div class="panel">
+      <div class="grid-2">
+        <div class="field">
+          <label class="lbl" for="category">Hazard Category <em>*</em></label>
+          <select id="category">
+            <option value="">Select category...</option>
+            <option>Pothole</option>
+            <option>Broken Streetlight</option>
+            <option>Fallen Tree</option>
+            <option>Waterlogging / Flooding</option>
+            <option>Garbage Dump</option>
+            <option>Open Manhole</option>
+            <option>Damaged Road Sign</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl" for="severity">Severity Level</label>
+          <select id="severity">
+            <option value="Low">🟢 Low — Minor issue</option>
+            <option value="Medium" selected>🟡 Medium — Moderate risk</option>
+            <option value="High">🟠 High — Serious risk</option>
+            <option value="Critical">🔴 Critical — Immediate danger</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl" for="description">Description <em>*</em></label>
+        <textarea id="description" placeholder="Describe the problem, nearby landmarks, or specific instructions for repair crews..."></textarea>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Photo Evidence</label>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload photo">
+          <div id="dzEmpty" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+            <svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <div class="big"><b>Click to browse</b> or drag &amp; drop a photo here</div>
+            <div class="small">Supports JPG, PNG, WEBP (Max 5MB)</div>
+          </div>
+          <img class="preview" id="preview" alt="" style="display:none">
+          <button type="button" class="remove" id="removeImg" aria-label="Remove photo">✕</button>
+          <input type="file" id="photo" accept="image/jpeg,image/png,image/webp" hidden>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <div class="loc-head">
+          <label class="lbl">Location Coordinates <em>*</em></label>
+          <button type="button" class="btn btn-outline sm" id="gpsBtn">
+            <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Detect My GPS Location
+          </button>
+        </div>
+        <div class="grid-2" style="gap:18px">
+          <div class="coord"><span>LAT</span><input type="number" step="any" id="lat" placeholder="Latitude (e.g. 9.9816)"></div>
+          <div class="coord"><span>LON</span><input type="number" step="any" id="lon" placeholder="Longitude (e.g. 76.2999)"></div>
+        </div>
+        <p class="tip">💡 Tip: You can also click anywhere on the live map below to pin exact coordinates!</p>
+      </div>
+
+      <button type="button" class="btn btn-primary submit" id="submitBtn">
+        <svg class="i" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Submit Incident Report
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="block" id="map-section">
+  <div class="container">
+    <div class="eyebrow">Geographic Overview</div>
+    <h2>Live Hazard Map</h2>
+    <p class="sub">Explore reported hazards across the community. Click any pin to inspect details or click on the map to select coordinates for a new report.</p>
+    <div class="map-wrap">
+      <div class="legend">
+        <span><i style="background:var(--pending)"></i>Pending Crew</span>
+        <span><i style="background:var(--progress)"></i>Work In Progress</span>
+        <span><i style="background:var(--resolved)"></i>Resolved Issue</span>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORTS ============ -->
+<section class="block" id="incidents">
+  <div class="container">
+    <div class="reports-head">
+      <div>
+        <div class="eyebrow">Public Transparency</div>
+        <h2 style="margin-bottom:0">Recent Community Reports</h2>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="on" data-f="all">All</button>
+        <button data-f="pending">Pending</button>
+        <button data-f="progress">In Progress</button>
+        <button data-f="resolved">Resolved</button>
+      </div>
+    </div>
+    <div class="reports" id="reports"></div>
+  </div>
+</section>
+
+<!-- ============ ADMIN CONSOLE ============ -->
+<section class="block" id="adminSection">
+  <div class="container">
+    <div class="reports-head">
+      <div>
+        <div class="eyebrow">City Management</div>
+        <h2 style="margin-bottom:0">Admin Console</h2>
+      </div>
+      <button class="btn btn-outline sm" id="logoutBtn">Log out</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Severity</th><th>Location</th><th>Reported</th><th>Status</th><th></th></tr></thead>
+        <tbody id="adminRows"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container">
+    <b>CivicShield — Smart Incident Reporting System</b>
+    <p>Empowering local communities and city councils for safer neighborhoods.</p>
+    <small>© 2026 Smart Incident Reporting System. Built for Community Safety &amp; City Management.</small>
+  </div>
+</footer>
+
+<!-- ============ SIDE DASHBOARD ============ -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+      Side Dashboard
+    </div>
+    <button id="closeDrawer" aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="d-title">City Safety Metrics</div>
+    <div class="metric-grid">
+      <div class="metric"><b class="c-total" data-stat="total">0</b><span>Total Incidents</span></div>
+      <div class="metric"><b class="c-pending" data-stat="pending">0</b><span>Pending Crew</span></div>
+      <div class="metric"><b class="c-progress" data-stat="progress">0</b><span>In Repair</span></div>
+      <div class="metric"><b class="c-resolved" data-stat="resolved">0</b><span>Resolved</span></div>
+    </div>
+    <div class="d-title">Quick Actions</div>
+    <a href="#report" class="btn btn-primary" data-close>📢 Report New Hazard</a>
+    <button class="btn btn-dark" id="drawerAdmin">🔐 Admin Console Login</button>
+    <div class="d-title stream" style="margin-top:34px">Live Activity Stream</div>
+    <div id="stream"></div>
+  </div>
+</aside>
+
+<!-- ============ ADMIN LOGIN MODAL ============ -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <h3>Admin Login</h3>
+    <p>Demo credentials — username: <b>admin</b> / password: <b>admin123</b></p>
+    <div class="field"><label class="lbl" for="user">Username</label><input type="text" id="user" autocomplete="username"></div>
+    <div class="field" style="margin-bottom:10px"><label class="lbl" for="pass">Password</label><input type="password" id="pass" autocomplete="current-password"></div>
+    <div class="err" id="loginErr"></div>
+    <div class="modal-actions">
+      <button class="btn btn-dark" id="cancelLogin">Cancel</button>
+      <button class="btn btn-primary" id="doLogin">Log in</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
